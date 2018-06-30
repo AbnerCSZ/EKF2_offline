@@ -32,9 +32,10 @@ void Ekf2::task_main()
 	//updateParams();
 //	std::ifstream read1("data/imu_data.txt");
 
-	long gyro_integral_dt = 0;
-	long accelerometer_integral_dt = 0;
-	long last_IMUtime = 0;
+	double gyro_integral_dt = 0;
+	double accelerometer_integral_dt = 0;
+	double last_IMUtime = 0;
+    double now = 0;
 
 	while (!_task_should_exit) {
 
@@ -50,14 +51,14 @@ void Ekf2::task_main()
 
 		// long gyro_integral_dt = 0.01;
 		// // in replay mode we are getting the actual timestamp from the sensor topic
-		long now = 0;
+			
 		read1 >> now;
 		printf("time now: %lf\n", now);
 		gyro_integral_dt = now - last_IMUtime;
 		accelerometer_integral_dt = now - last_IMUtime;
 
 		// // push imu data into estimator
-		long gyro_integral[3],gyro_rad[3];
+		double gyro_integral[3],gyro_rad[3];
 		read1 >> gyro_rad[0];	read1 >> gyro_rad[1];	read1 >> gyro_rad[2];
 		printf("gyro_rad:%lf,%lf,%lf\n", gyro_rad[0], gyro_rad[1], gyro_rad[2]);
 
@@ -65,7 +66,7 @@ void Ekf2::task_main()
 		gyro_integral[1] = gyro_rad[1] * gyro_integral_dt;
 		gyro_integral[2] = gyro_rad[2] * gyro_integral_dt;
 
-		long accel_integral[3],accelerometer_m_s2[3];
+		double accel_integral[3],accelerometer_m_s2[3];
 		read1 >> accelerometer_m_s2[0];	read1 >> accelerometer_m_s2[1];	read1 >> accelerometer_m_s2[2];
 		printf("accelerometer_m_s2:%lf,%lf,%lf\n", accelerometer_m_s2[0], accelerometer_m_s2[1], accelerometer_m_s2[2]);
 
