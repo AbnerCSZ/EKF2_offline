@@ -9,7 +9,7 @@ std::ifstream read4("data/baro_data.txt");
 std::ofstream euler_estimator("euler_estimator.txt");
 std::ofstream position_estimator("position_estimator.txt");
 
-bool bReadGPS;
+bool bReadGPS, bReadMag, bReadBaro;
 
 
 namespace ekf2
@@ -46,18 +46,16 @@ void Ekf2::task_main()
 	float accelerometer_integral_dt = 0;
 	float last_IMUtime = 0;
     float now = 0;
-    double gps_time_s, lat, lon, alt;
+    double gps_time_ms, lat, lon, alt;
+    double mag_time_ms, magx, magy, magz;
+    double baro_time_ms, baroHeight;
 
 	while (!_task_should_exit && !read1.eof()  && !read2.eof()) {
 
 		bool isa = true;
+		bool mag_updated = false;
+		bool baro_updated = false;
 		bool gps_updated = false;
-		bool airspeed_updated = false;
-		bool optical_flow_updated = false;
-		bool range_finder_updated = false;
-		bool vehicle_land_detected_updated = false;
-		bool vision_position_updated = false;
-		bool vision_attitude_updated = false;
 		bool vehicle_status_updated = false;
 
 		// long gyro_integral_dt = 0.01;
@@ -85,20 +83,56 @@ void Ekf2::task_main()
 		float accel_integral[3],accelerometer_m_s2[3];
 		read1 >> accelerometer_m_s2[0];	read1 >> accelerometer_m_s2[1];	read1 >> accelerometer_m_s2[2];
 		//printf("accelerometer_m_s2:%lf,%lf,%lf\n", accelerometer_m_s2[0], accelerometer_m_s2[1], accelerometer_m_s2[2]);
-
-		
 		accel_integral[0] = accelerometer_m_s2[0] * accelerometer_integral_dt;
 		accel_integral[1] = accelerometer_m_s2[1] * accelerometer_integral_dt;
 		accel_integral[2] = accelerometer_m_s2[2] * accelerometer_integral_dt;
- 
 		_ekf.setIMUData(now, gyro_integral_dt * 1.e6f, accelerometer_integral_dt * 1.e6f,
 				gyro_integral, accel_integral);		
-
 		last_IMUtime = now;
+
+		if(bReadMag)
+		{
+			read3 >> mag_time_ms;	//ms
+			float temp; read3>>temp;
+			read3 >> magx;
+			read3 >> magy;
+			read3 >> magz;
+			read3>>temp;read3>>temp;read3>>temp;
+			bReadMag = false;		
+		}
+		if(mag_time_ms * 1.e3f < now)
+		{
+			mag_updated = true;
+			bReadMag = true;
+		}
+		if(mag_updated)
+		{
+			_timestamp_mag_us = mag_time_ms * 1.e3f;
+
+			// If the time last used by the EKF is less than specified, then accumulate the
+			// data and push the average when the 50msec is reached.
+			_mag_time_sum_ms += _timestamp_mag_us / 1000.0f;
+			_mag_sample_count++;
+			_mag_data_sum[0] += magx;
+			_mag_data_sum[1] += magy;
+			_mag_data_sum[2] += magz;
+			uint32_t mag_time_ms = _mag_time_sum_ms / _mag_sample_count;
+
+			if (mag_time_ms - _mag_time_ms_last_used > _params->sensor_interval_min_ms) {
+				float mag_sample_count_inv = 1.0f / (float)_mag_sample_count;
+				float mag_data_avg_ga[3] = {_mag_data_sum[0] *mag_sample_count_inv, _mag_data_sum[1] *mag_sample_count_inv, _mag_data_sum[2] *mag_sample_count_inv};
+				_ekf.setMagData(1000 * (uint64_t)mag_time_ms, mag_data_avg_ga);
+				_mag_time_ms_last_used = mag_time_ms;
+				_mag_time_sum_ms = 0;
+				_mag_sample_count = 0;
+				_mag_data_sum[0] = 0.0f;
+				_mag_data_sum[1] = 0.0f;
+				_mag_data_sum[2] = 0.0f;			
+		}
 
 		if(bReadGPS)
 		{
-			read2 >> gps_time_s;	//ms
+			read2 >> gps_time_ms;	//ms
 			float temp1; read2>>temp1;read2>>temp1;read2>>temp1;read2>>temp1;read2>>temp1;	
 			read2 >> lat;
 			read2 >> lon;
@@ -106,7 +140,7 @@ void Ekf2::task_main()
 			read2>>temp1;read2>>temp1;read2>>temp1;read2>>temp1;
 			bReadGPS = false;		
 		}
-		if(gps_time_s * 1.e3f < now)
+		if(gps_time_ms * 1.e3f < now)
 		{
 			gps_updated = true;
 			bReadGPS = true;
@@ -114,7 +148,7 @@ void Ekf2::task_main()
 		if(gps_updated)
 		{
 			struct gps_message gps_msg = {};
-			gps_msg.time_usec = (uint64_t)(gps_time_s * 1.e3f);
+			gps_msg.time_usec = (uint64_t)(gps_time_ms * 1.e3f);
 			gps_msg.lat = (int32_t)(lat * 1.e7f);
 			gps_msg.lon = (int32_t)(lon * 1.e7f);
 			gps_msg.alt = (int32_t)(alt * 1.e3f);
@@ -228,11 +262,11 @@ void Ekf2::task_main()
 
 	}
 
-
 }
+
 int main(int argc, char *argv[])
 {
-	printf("asasssa\n" );
+	printf("asasssa\n");
 	bReadGPS = true;
 	Ekf2* _ekf2 = new Ekf2();
 	//_ekf2->print_status();

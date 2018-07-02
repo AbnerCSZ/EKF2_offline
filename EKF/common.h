@@ -290,12 +290,15 @@ struct parameters {
 		ev_delay_ms = 100.0f;
 
 		// input noise
-		gyro_noise = 1.5e-2f;
-		accel_noise = 3.5e-1f;
-
+		//gyro_noise = 1.5e-2f;
+		//accel_noise = 3.5e-1f;
+		gyro_noise = 4.6/3600.0f*3.14/180.0f;
+		accel_noise = 26 *9.8f /1000000.0f;
 		// process noise
-		gyro_bias_p_noise = 1.0e-3f;
-		accel_bias_p_noise = 3.0e-3f;
+		//gyro_bias_p_noise = 1.0e-3f;
+		//accel_bias_p_noise = 3.0e-3f;
+		gyro_bias_p_noise = 0.3/60.f*3.0f/180.f;
+		accel_bias_p_noise = 0.24/1000.0f *9.8;
 		mage_p_noise = 1.0e-3f;
 		magb_p_noise = 1.0e-4f;
 		wind_vel_p_noise = 1.0e-1f;
