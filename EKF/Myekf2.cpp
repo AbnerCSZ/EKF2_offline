@@ -50,7 +50,7 @@ void Ekf2::task_main()
     double mag_time_ms_read, magx, magy, magz;
     double baro_time_ms_read, baroHeight, baroHeight_origin = 0.0f;
 
-	while (!_task_should_exit && !read1.eof()  && !read2.eof()) {
+	while (!_task_should_exit && !read1.eof() && !read2.eof() && !read3.eof() && !read4.eof()) {
 
 		bool isa = true;
 		bool mag_updated = false;
@@ -142,6 +142,7 @@ void Ekf2::task_main()
 			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
 			read4 >> baroHeight ;
 			read4>>temp;
+			baroHeight /= 2.0f;
 			// if(baroHeight_origin == 0)
 			// 	baroHeight_origin = baroHeight;
 			// baroHeight -= baroHeight_origin;
@@ -201,8 +202,8 @@ void Ekf2::task_main()
 			printf("time now: %lf\n", now);
 			printf("gps: %ld, %d, %d, %d\n",gps_msg.time_usec,gps_msg.lat,gps_msg.lon,gps_msg.alt);
 			gps_msg.fix_type = 3;
-			gps_msg.eph = 0;
-			gps_msg.epv = 0;
+			gps_msg.eph = 0.3;
+			gps_msg.epv = 0.4;
 			gps_msg.sacc = 0;
 			gps_msg.vel_m_s = 0;
 			gps_msg.vel_ned[0] = 0;
@@ -216,7 +217,7 @@ void Ekf2::task_main()
 			_ekf.setGpsData(gps_msg.time_usec, &gps_msg);
 		}
 
-		//sleep(1);
+		//usleep(500000);
 
 
 

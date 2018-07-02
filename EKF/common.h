@@ -153,10 +153,10 @@ struct extVisionSample {
 
 // Bit locations for fusion_mode
 #define MASK_USE_GPS    (1<<0)  // set to true to use GPS data
-#define MASK_USE_OF     (1<<1)  // set to true to use optical flow data
+#define MASK_USE_OF     (0<<1)  // set to true to use optical flow data
 #define MASK_INHIBIT_ACC_BIAS (1<<2)  // set to true to inhibit estimation of accelerometer delta velocity bias
-#define MASK_USE_EVPOS	(1<<3)  // set to true to use external vision NED position data
-#define MASK_USE_EVYAW  (1<<4)	// set to true to use exernal vision quaternion data for yaw
+#define MASK_USE_EVPOS	(0<<3)  // set to true to use external vision NED position data
+#define MASK_USE_EVYAW  (0<<4)	// set to true to use exernal vision quaternion data for yaw
 
 // Integer definitions for mag_fusion_type
 #define MAG_FUSE_TYPE_AUTO      0   // The selection of either heading or 3D magnetometer fusion will be automatic
@@ -278,27 +278,29 @@ struct parameters {
 		// measurement source control
 		fusion_mode = MASK_USE_GPS;
 		vdist_sensor_type = VDIST_SENSOR_BARO;
-		sensor_interval_min_ms = 20;
+		sensor_interval_min_ms = 10;
 
 		// measurement time delays
 		mag_delay_ms = 0.0f;
 		baro_delay_ms = 0.0f;
-		gps_delay_ms = 200.0f;
-		airspeed_delay_ms = 200.0f;
+		gps_delay_ms = 0.0f;
+		airspeed_delay_ms = 40.0f;
 		flow_delay_ms = 5.0f;
 		range_delay_ms = 5.0f;
-		ev_delay_ms = 100.0f;
+		ev_delay_ms = 40.0f;
 
 		// input noise
-		//gyro_noise = 1.5e-2f;
-		//accel_noise = 3.5e-1f;
-		gyro_noise = 4.6/3600.0f*3.14/180.0f;
-		accel_noise = 26 *9.8f /1000000.0f;
+		// gyro_noise = 1.5e-2f;
+		// accel_noise = 3.5e-1f;
+		gyro_noise = 1.5e-2f;
+		accel_noise = 8.5e-1f;
+		//gyro_noise = 0.3/60.f*3.0f/180.f /60.0f;
+		//accel_noise = 0.24/1000.0f *9.8 /60.0f;
 		// process noise
-		//gyro_bias_p_noise = 1.0e-3f;
-		//accel_bias_p_noise = 3.0e-3f;
-		gyro_bias_p_noise = 0.3/60.f*3.0f/180.f;
-		accel_bias_p_noise = 0.24/1000.0f *9.8;
+		gyro_bias_p_noise = 1.0e-3f;
+		accel_bias_p_noise = 3.0e-2f;
+		//gyro_bias_p_noise =  4.6/3600.0f*3.14/180.0f;
+		//accel_bias_p_noise = 26 *9.8f /1000000.0f  ;
 		mage_p_noise = 1.0e-3f;
 		magb_p_noise = 1.0e-4f;
 		wind_vel_p_noise = 1.0e-1f;
@@ -314,7 +316,7 @@ struct parameters {
 		gps_vel_noise = 5.0e-1f;
 		gps_pos_noise = 0.5f;
 		pos_noaid_noise = 10.0f;
-		baro_noise = 2.0f;
+		baro_noise = 1.7f;	//2.0f;
 		baro_innov_gate = 5.0f;
 		posNE_innov_gate = 5.0f;
 		vel_innov_gate = 5.0f;
@@ -322,7 +324,7 @@ struct parameters {
 
 		// magnetometer fusion
 		mag_heading_noise = 3.0e-1f;
-		mag_noise = 5.0e-2f;
+		mag_noise = 5.0e-3f;//5.0e-2f;
 		mag_declination_deg = 0.0f;
 		heading_innov_gate = 2.6f;
 		mag_innov_gate = 3.0f;

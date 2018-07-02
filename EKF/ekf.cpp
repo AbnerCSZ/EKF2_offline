@@ -212,7 +212,7 @@ bool Ekf::update()
 	}
 
 	// Only run the filter if IMU data in the buffer has been updated
-	if (_imu_updated) {
+	if (_imu_updated) {	
 		// perform state and covariance prediction for the main filter
 		predictState();
 		predictCovariance();
@@ -232,8 +232,10 @@ bool Ekf::update()
 	if (!ISFINITE(_state.quat_nominal(0)) || !ISFINITE(_output_new.quat_nominal(0))) {
 		return false;
 	}
-//return true;
+
+	//return true;
 	// We don't have valid data to output until tilt and yaw alignment is complete
+	// return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
 	return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
 }
 
@@ -347,13 +349,16 @@ bool Ekf::initialiseFilter()
 	bool hgt_count_fail = _hgt_counter <= 2*_obs_buffer_length;
 	bool mag_count_fail = _mag_counter <= 2*_obs_buffer_length;
 	bool ev_count_fail = ((_params.fusion_mode & MASK_USE_EVPOS) || (_params.fusion_mode & MASK_USE_EVYAW)) && (_ev_counter <= 2*_obs_buffer_length);
-	// if (hgt_count_fail || mag_count_fail || ev_count_fail) {
-	// //if (hgt_count_fail || mag_count_fail) {
-	// 	printf("flag4: %d, %d, %d\n", hgt_count_fail, mag_count_fail, ev_count_fail);
-	// 	return false;
+	 
+	 if (hgt_count_fail || mag_count_fail) {
+	//if (  mag_count_fail) {
+	//if (hgt_count_fail ) {
+		printf("flag4: %d, %d, %d\n", _hgt_counter, _mag_counter, _obs_buffer_length);
 
-	// }
-	//  else {
+		return false;
+	}
+	else 
+	
 	{
 		// reset variables that are shared with post alignment GPS checks
 		_gps_drift_velD = 0.0f;
