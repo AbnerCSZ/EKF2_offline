@@ -206,13 +206,13 @@ bool Ekf::update()
 		_filter_initialised = initialiseFilter();
 
 		if (!_filter_initialised) {
+			printf("flag 1\n");
 			return false;
 		}
 	}
 
 	// Only run the filter if IMU data in the buffer has been updated
 	if (_imu_updated) {
-
 		// perform state and covariance prediction for the main filter
 		predictState();
 		predictCovariance();
@@ -232,7 +232,7 @@ bool Ekf::update()
 	if (!ISFINITE(_state.quat_nominal(0)) || !ISFINITE(_output_new.quat_nominal(0))) {
 		return false;
 	}
-
+return true;
 	// We don't have valid data to output until tilt and yaw alignment is complete
 	return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
 }
@@ -338,17 +338,23 @@ bool Ekf::initialiseFilter()
 	} else if (_primary_hgt_source == VDIST_SENSOR_EV) {
 		// do nothing becasue vision data is checked elsewhere
 	} else {
+		printf("flag3\n");
 		return false;
 	}
 
 	// check to see if we have enough measurements and return false if not
+	printf("zyx: %d, %d", _hgt_counter, _mag_counter);
 	bool hgt_count_fail = _hgt_counter <= 2*_obs_buffer_length;
 	bool mag_count_fail = _mag_counter <= 2*_obs_buffer_length;
 	bool ev_count_fail = ((_params.fusion_mode & MASK_USE_EVPOS) || (_params.fusion_mode & MASK_USE_EVYAW)) && (_ev_counter <= 2*_obs_buffer_length);
-	if (hgt_count_fail || mag_count_fail || ev_count_fail) {
-		return false;
+	// if (hgt_count_fail || mag_count_fail || ev_count_fail) {
+	// //if (hgt_count_fail || mag_count_fail) {
+	// 	printf("flag4: %d, %d, %d\n", hgt_count_fail, mag_count_fail, ev_count_fail);
+	// 	return false;
 
-	} else {
+	// }
+	 //else {
+	{
 		// reset variables that are shared with post alignment GPS checks
 		_gps_drift_velD = 0.0f;
 		_gps_alt_ref = 0.0f;
@@ -372,6 +378,7 @@ bool Ekf::initialiseFilter()
 			roll = atan2f(-_delVel_sum(1), -_delVel_sum(2));
 
 		} else {
+			printf("flag5\n");
 			return false;
 		}
 
@@ -418,7 +425,7 @@ bool Ekf::initialiseFilter()
 
 		// reset the output predictor state history to match the EKF initial values
 		alignOutputFilter();
-
+		printf("flag true\n");
 		return true;
 	}
 }
