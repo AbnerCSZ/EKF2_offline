@@ -15,6 +15,7 @@ mpl.rcParams['font.sans-serif'] = 'NSimSun,Times New Roman'
 #(t2, yaw2, pitch2, roll2 ) = np2.loadtxt('/home/abner/UFO/ecl/EKF/build/euler_data.txt', unpack=True)
 (t3, x3, y3, z3) = np3.loadtxt('/home/abner/UFO/ecl/EKF/build/position_estimator.txt', unpack=True)
 (t4, x4, y4, z4, yaw2, pitch2, roll2) = np.loadtxt('/home/abner/UFO/ecl/EKF/build/data/pose_real.txt', unpack=True)
+(t, test_x, test_y) = np4.loadtxt('/home/abner/UFO/ecl/EKF/build/data/gps_test.txt', unpack=True)
 
 
 fig1 = plt.figure()
@@ -45,4 +46,4 @@ bx6.plot(t3, z3, '-',color='black')
 bx6.plot(t4, -z4, '-',color='red')
 bx6.set_title('z',fontsize=12,color='b')
 plt.show()
- 
+

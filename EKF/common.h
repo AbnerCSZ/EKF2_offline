@@ -297,7 +297,7 @@ struct parameters {
 		//gyro_noise = 0.3/60.f*3.0f/180.f /60.0f;
 		//accel_noise = 0.24/1000.0f *9.8 /60.0f;
 		// process noise
-		gyro_bias_p_noise = 1.0e-3f;
+		gyro_bias_p_noise = 0.5e-3f;
 		accel_bias_p_noise = 3.0e-2f;
 		//gyro_bias_p_noise =  4.6/3600.0f*3.14/180.0f;
 		//accel_bias_p_noise = 26 *9.8f /1000000.0f  ;
@@ -314,7 +314,7 @@ struct parameters {
 
 		// position and velocity fusion
 		gps_vel_noise = 5.0e-1f;
-		gps_pos_noise = 0.5f;
+		gps_pos_noise = 0.8f;
 		pos_noaid_noise = 10.0f;
 		baro_noise = 1.7f;	//2.0f;
 		baro_innov_gate = 5.0f;

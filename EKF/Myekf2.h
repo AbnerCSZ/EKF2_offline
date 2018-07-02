@@ -51,6 +51,7 @@ private:
 	uint64_t _timestamp_balt_us = 0;
 
 	// Used to down sample magnetometer data
+	matrix::Vector <float, 4> mag_from_API;
 	float _mag_data_sum[3] = {0};			// summed magnetometer readings (Ga)
 	uint64_t _mag_time_sum_ms = 0;		// summed magnetoemter time stamps (msec)
 	// uint64_t _mag_time_sum_ms;		// summed magnetoemter time stamps (msec)
@@ -58,6 +59,7 @@ private:
 	uint32_t _mag_time_ms_last_used = 0;	// time stamp in msec of the last averaged magnetometer measurement used by the EKF
 
 	// Used to down sample barometer data
+	matrix::Vector2f baro_from_API;
 	float _balt_data_sum;			// summed barometric altitude readings (m)
 	uint64_t _balt_time_sum_ms;		// summed barometric altitude time stamps (msec)
 	uint8_t _balt_sample_count = 0;		// number of barometric altitude measurements summed
@@ -67,6 +69,7 @@ private:
 
 	float _acc_hor_filt = 0.0f; 	// low-pass filtered horizontal acceleration
 
+	matrix::Vector <float, 4> gps_from_API;
 	Ekf _ekf;
 
 	parameters *_params;	// pointer to ekf parameter struct (located in _ekf class instance)

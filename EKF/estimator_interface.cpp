@@ -45,7 +45,9 @@
 #include "../ecl.h"
 #include "estimator_interface.h"
 #include "mathlib.h"
+#include <fstream>
 
+std::ofstream gps_test("data/gps_test.txt");
 
 EstimatorInterface::EstimatorInterface():
 	_obs_buffer_length(10),
@@ -202,6 +204,7 @@ void EstimatorInterface::setGpsData(uint64_t time_usec, struct gps_message *gps)
 			float lpos_x = 0.0f;
 			float lpos_y = 0.0f;
 			map_projection_project(&_pos_ref, (gps->lat / 1.0e7), (gps->lon / 1.0e7), &lpos_x, &lpos_y);
+			gps_test << time_usec/1000 << " " << lpos_x << " " << lpos_y << std::endl;
 			gps_sample_new.pos(0) = lpos_x;
 			gps_sample_new.pos(1) = lpos_y;
 
