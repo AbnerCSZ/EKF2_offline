@@ -47,8 +47,8 @@ void Ekf2::task_main()
 	float last_IMUtime = 0;
     float now = 0;
     double gps_time_ms, lat, lon, alt;
-    double mag_time_ms, magx, magy, magz;
-    double baro_time_ms, baroHeight;
+    double mag_time_ms_read, magx, magy, magz;
+    double baro_time_ms_read, baroHeight, baroHeight_origin = 0.0f;
 
 	while (!_task_should_exit && !read1.eof()  && !read2.eof()) {
 
@@ -92,7 +92,7 @@ void Ekf2::task_main()
 
 		if(bReadMag)
 		{
-			read3 >> mag_time_ms;	//ms
+			read3 >> mag_time_ms_read;	//ms
 			float temp; read3>>temp;
 			read3 >> magx;
 			read3 >> magy;
@@ -100,14 +100,14 @@ void Ekf2::task_main()
 			read3>>temp;read3>>temp;read3>>temp;
 			bReadMag = false;		
 		}
-		if(mag_time_ms * 1.e3f < now)
+		if(mag_time_ms_read * 1.e3f < now)
 		{
 			mag_updated = true;
 			bReadMag = true;
 		}
 		if(mag_updated)
 		{
-			_timestamp_mag_us = mag_time_ms * 1.e3f;
+			_timestamp_mag_us = mag_time_ms_read * 1.e3f;
 
 			// If the time last used by the EKF is less than specified, then accumulate the
 			// data and push the average when the 50msec is reached.
@@ -117,17 +117,63 @@ void Ekf2::task_main()
 			_mag_data_sum[1] += magy;
 			_mag_data_sum[2] += magz;
 			uint32_t mag_time_ms = _mag_time_sum_ms / _mag_sample_count;
-
+			
 			if (mag_time_ms - _mag_time_ms_last_used > _params->sensor_interval_min_ms) {
 				float mag_sample_count_inv = 1.0f / (float)_mag_sample_count;
 				float mag_data_avg_ga[3] = {_mag_data_sum[0] *mag_sample_count_inv, _mag_data_sum[1] *mag_sample_count_inv, _mag_data_sum[2] *mag_sample_count_inv};
 				_ekf.setMagData(1000 * (uint64_t)mag_time_ms, mag_data_avg_ga);
+				printf("mag: %f %f %d %f %f %f\n",now,mag_time_ms_read,mag_time_ms,
+						_mag_data_sum[0],_mag_data_sum[1],_mag_data_sum[2]);
 				_mag_time_ms_last_used = mag_time_ms;
 				_mag_time_sum_ms = 0;
 				_mag_sample_count = 0;
 				_mag_data_sum[0] = 0.0f;
 				_mag_data_sum[1] = 0.0f;
-				_mag_data_sum[2] = 0.0f;			
+				_mag_data_sum[2] = 0.0f;	
+			}		
+		}
+
+
+		if(bReadBaro)
+		{
+			read4 >> baro_time_ms_read;	//ms
+			float temp; read4>>temp;
+			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
+			read4 >> baroHeight ;
+			read4>>temp;
+			if(baroHeight_origin = 0)
+				baroHeight_origin = baroHeight;
+			//baroHeight *= 1.e3f;
+			baroHeight -= baroHeight_origin;
+			bReadBaro= false;		
+		}
+		if(baro_time_ms_read *1.e3f <now)
+		{
+			baro_updated = true;
+			bReadBaro = true;
+		}
+		if(baro_updated)
+		{
+				_timestamp_balt_us = baro_time_ms_read*1.e3f;
+
+				// If the time last used by the EKF is less than specified, then accumulate the
+				// data and push the average when the 50msec is reached.
+				_balt_time_sum_ms += _timestamp_balt_us / 1000;
+				_balt_sample_count++;
+				_balt_data_sum += baroHeight;
+				uint32_t balt_time_ms = _balt_time_sum_ms / _balt_sample_count;
+
+				if (balt_time_ms - _balt_time_ms_last_used > (uint32_t)_params->sensor_interval_min_ms) {
+					float balt_data_avg = _balt_data_sum / (float)_balt_sample_count;
+				printf("baro: %f %f %d %f\n",now,baro_time_ms_read,balt_time_ms,
+						balt_data_avg);					
+					//_ekf.setBaroData(1000 * (uint64_t)balt_time_ms, balt_data_avg);
+					_balt_time_ms_last_used = balt_time_ms;
+					_balt_time_sum_ms = 0;
+					_balt_sample_count = 0;
+					_balt_data_sum = 0.0f;
+
+				}			
 		}
 
 		if(bReadGPS)
