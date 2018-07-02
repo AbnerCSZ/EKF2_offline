@@ -97,6 +97,7 @@ void Ekf2::task_main()
 			read3 >> magx;
 			read3 >> magy;
 			read3 >> magz;
+			//magx /= 100.0f;magy /= 100.0f;magz /= 100.0f;
 			read3>>temp;read3>>temp;read3>>temp;
 			bReadMag = false;		
 		}
@@ -141,9 +142,8 @@ void Ekf2::task_main()
 			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
 			read4 >> baroHeight ;
 			read4>>temp;
-			if(baroHeight_origin = 0)
+			if(baroHeight_origin == 0)
 				baroHeight_origin = baroHeight;
-			//baroHeight *= 1.e3f;
 			baroHeight -= baroHeight_origin;
 			bReadBaro= false;		
 		}
@@ -167,7 +167,7 @@ void Ekf2::task_main()
 					float balt_data_avg = _balt_data_sum / (float)_balt_sample_count;
 				printf("baro: %f %f %d %f\n",now,baro_time_ms_read,balt_time_ms,
 						balt_data_avg);					
-					//_ekf.setBaroData(1000 * (uint64_t)balt_time_ms, balt_data_avg);
+					_ekf.setBaroData(1000 * (uint64_t)balt_time_ms, balt_data_avg);
 					_balt_time_ms_last_used = balt_time_ms;
 					_balt_time_sum_ms = 0;
 					_balt_sample_count = 0;
