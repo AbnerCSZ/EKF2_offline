@@ -142,9 +142,9 @@ void Ekf2::task_main()
 			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
 			read4 >> baroHeight ;
 			read4>>temp;
-			if(baroHeight_origin == 0)
-				baroHeight_origin = baroHeight;
-			baroHeight -= baroHeight_origin;
+			// if(baroHeight_origin == 0)
+			// 	baroHeight_origin = baroHeight;
+			// baroHeight -= baroHeight_origin;
 			bReadBaro= false;		
 		}
 		if(baro_time_ms_read *1.e3f <now)
@@ -213,7 +213,7 @@ void Ekf2::task_main()
 			//TODO add gdop to gps topic
 			gps_msg.gdop = 0.0f;
 
-			 _ekf.setGpsData(gps_msg.time_usec, &gps_msg);
+			_ekf.setGpsData(gps_msg.time_usec, &gps_msg);
 		}
 
 		//sleep(1);

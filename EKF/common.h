@@ -306,8 +306,8 @@ struct parameters {
 		terrain_gradient = 0.5f;
 
 		// initialisation errors
-		switch_on_gyro_bias = 0.1f;
-		switch_on_accel_bias = 0.2f;
+		switch_on_gyro_bias = 0.0f;//0.1f;
+		switch_on_accel_bias = 0.0f;//0.2f;
 		initial_tilt_err = 0.1f;
 
 		// position and velocity fusion

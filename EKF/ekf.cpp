@@ -232,7 +232,7 @@ bool Ekf::update()
 	if (!ISFINITE(_state.quat_nominal(0)) || !ISFINITE(_output_new.quat_nominal(0))) {
 		return false;
 	}
-return true;
+//return true;
 	// We don't have valid data to output until tilt and yaw alignment is complete
 	return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
 }
@@ -353,7 +353,7 @@ bool Ekf::initialiseFilter()
 	// 	return false;
 
 	// }
-	 //else {
+	//  else {
 	{
 		// reset variables that are shared with post alignment GPS checks
 		_gps_drift_velD = 0.0f;

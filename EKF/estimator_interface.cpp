@@ -190,6 +190,7 @@ void EstimatorInterface::setGpsData(uint64_t time_usec, struct gps_message *gps)
 		memcpy(&gps_sample_new.vel._data[0], gps->vel_ned, sizeof(gps_sample_new.vel._data));
 
 		_gps_speed_valid = gps->vel_ned_valid;
+		_gps_speed_valid = false;
 		gps_sample_new.sacc = gps->sacc;
 		gps_sample_new.hacc = gps->eph;
 		gps_sample_new.vacc = gps->epv;
