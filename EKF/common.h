@@ -290,15 +290,15 @@ struct parameters {
 		ev_delay_ms = 40.0f;
 
 		// input noise
-		// gyro_noise = 1.5e-2f;
-		// accel_noise = 3.5e-1f;
-		gyro_noise = 1.5e-2f;
-		accel_noise = 8.5e-1f;
+		 gyro_noise = 0.095;
+		 accel_noise = 0.01;
+		//gyro_noise = 1.5e-2f;
+		//accel_noise = 10.0e-1f;
 		//gyro_noise = 0.3/60.f*3.0f/180.f /60.0f;
 		//accel_noise = 0.24/1000.0f *9.8 /60.0f;
 		// process noise
-		gyro_bias_p_noise = 0.5e-3f;
-		accel_bias_p_noise = 3.0e-2f;
+		gyro_bias_p_noise = 0.0005;
+		accel_bias_p_noise = 0.003;
 		//gyro_bias_p_noise =  4.6/3600.0f*3.14/180.0f;
 		//accel_bias_p_noise = 26 *9.8f /1000000.0f  ;
 		mage_p_noise = 1.0e-3f;
@@ -308,13 +308,13 @@ struct parameters {
 		terrain_gradient = 0.5f;
 
 		// initialisation errors
-		switch_on_gyro_bias = 0.0f;//0.1f;
-		switch_on_accel_bias = 0.0f;//0.2f;
+		switch_on_gyro_bias = 0.1f;//0.1f;
+		switch_on_accel_bias = 0.2f;//0.2f;
 		initial_tilt_err = 0.1f;
 
 		// position and velocity fusion
 		gps_vel_noise = 5.0e-1f;
-		gps_pos_noise = 0.8f;
+		gps_pos_noise = 0.5f;
 		pos_noaid_noise = 10.0f;
 		baro_noise = 1.7f;	//2.0f;
 		baro_innov_gate = 5.0f;
@@ -370,6 +370,8 @@ struct parameters {
 		// XYZ offset of sensors in body axes (m)
 		imu_pos_body = {};
 		gps_pos_body = {};
+		gps_pos_body(0) = -0.4;
+		gps_pos_body(1) = 0.4;
 		rng_pos_body = {};
 		flow_pos_body = {};
 		ev_pos_body = {};

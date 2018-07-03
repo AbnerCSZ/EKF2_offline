@@ -123,8 +123,8 @@ void Ekf2::task_main()
 				float mag_sample_count_inv = 1.0f / (float)_mag_sample_count;
 				float mag_data_avg_ga[3] = {_mag_data_sum[0] *mag_sample_count_inv, _mag_data_sum[1] *mag_sample_count_inv, _mag_data_sum[2] *mag_sample_count_inv};
 				_ekf.setMagData(1000 * (uint64_t)mag_time_ms, mag_data_avg_ga);
-				printf("mag: %f %f %d %f %f %f\n",now,mag_time_ms_read,mag_time_ms,
-						_mag_data_sum[0],_mag_data_sum[1],_mag_data_sum[2]);
+				//printf("mag: %f %f %d %f %f %f\n",now,mag_time_ms_read,mag_time_ms,
+				//		_mag_data_sum[0],_mag_data_sum[1],_mag_data_sum[2]);
 				_mag_time_ms_last_used = mag_time_ms;
 				_mag_time_sum_ms = 0;
 				_mag_sample_count = 0;
@@ -142,7 +142,7 @@ void Ekf2::task_main()
 			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
 			read4 >> baroHeight ;
 			read4>>temp;
-			baroHeight /= 2.0f;
+			//baroHeight /= 2.0f;
 			// if(baroHeight_origin == 0)
 			// 	baroHeight_origin = baroHeight;
 			// baroHeight -= baroHeight_origin;
@@ -166,8 +166,8 @@ void Ekf2::task_main()
 
 				if (balt_time_ms - _balt_time_ms_last_used > (uint32_t)_params->sensor_interval_min_ms) {
 					float balt_data_avg = _balt_data_sum / (float)_balt_sample_count;
-				printf("baro: %f %f %d %f\n",now,baro_time_ms_read,balt_time_ms,
-						balt_data_avg);					
+				//printf("baro: %f %f %d %f\n",now,baro_time_ms_read,balt_time_ms,
+				//		balt_data_avg);					
 					_ekf.setBaroData(1000 * (uint64_t)balt_time_ms, balt_data_avg);
 					_balt_time_ms_last_used = balt_time_ms;
 					_balt_time_sum_ms = 0;
@@ -199,8 +199,8 @@ void Ekf2::task_main()
 			gps_msg.lat = (int32_t)(lat * 1.e7f);
 			gps_msg.lon = (int32_t)(lon * 1.e7f);
 			gps_msg.alt = (int32_t)(alt * 1.e3f);
-			printf("time now: %lf\n", now);
-			printf("gps: %ld, %d, %d, %d\n",gps_msg.time_usec,gps_msg.lat,gps_msg.lon,gps_msg.alt);
+			//printf("time now: %lf\n", now);
+			//printf("gps: %ld, %d, %d, %d\n",gps_msg.time_usec,gps_msg.lat,gps_msg.lon,gps_msg.alt);
 			gps_msg.fix_type = 3;
 			gps_msg.eph = 0.3;
 			gps_msg.epv = 0.4;
@@ -250,7 +250,7 @@ void Ekf2::task_main()
 				// Local Position NED
 				float position[3];
 				_ekf.get_position(position);
-				printf("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
+				//printf("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
 				position_estimator<< now/1.e6f <<" "<<position[0] <<" "<<position[1] <<" "
 				<<position[2] <<" "<<std::endl;
 				// Attitude quaternion
@@ -296,7 +296,7 @@ void Ekf2::task_main()
 		
 			// The rotation of the tangent plane vs. geographical north
 			matrix::Eulerf euler(q);
-			printf("euler: %f  %f  %f\n", euler.phi(),euler.theta(),euler.psi());
+			//printf("euler: %f  %f  %f\n", euler.phi(),euler.theta(),euler.psi());
 				euler_estimator<< now/1.e6f <<" "<<euler.phi() <<" "<<euler.theta() <<" "
 				<<euler.psi() <<" "<<std::endl;			
 			// TODO: uORB definition does not define what these variables are. We have assumed them to be horizontal and vertical 1-std dev accuracy in metres
