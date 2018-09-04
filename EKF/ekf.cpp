@@ -230,6 +230,7 @@ bool Ekf::update()
 
 	// check for NaN or inf on attitude states
 	if (!ISFINITE(_state.quat_nominal(0)) || !ISFINITE(_output_new.quat_nominal(0))) {
+		printf("Nan\n");
 		return false;
 	}
 
@@ -237,6 +238,7 @@ bool Ekf::update()
 	// We don't have valid data to output until tilt and yaw alignment is complete
 	// return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
 	return _control_status.flags.tilt_align && _control_status.flags.yaw_align;
+	//return true ;
 }
 
 bool Ekf::initialiseFilter()
@@ -345,9 +347,10 @@ bool Ekf::initialiseFilter()
 	}
 
 	// check to see if we have enough measurements and return false if not
-	printf("zyx: %d, %d", _hgt_counter, _mag_counter);
+	
 	bool hgt_count_fail = _hgt_counter <= 2*_obs_buffer_length;
 	bool mag_count_fail = _mag_counter <= 2*_obs_buffer_length;
+	//printf("zyx: %d, %d", hgt_count_fail, mag_count_fail);
 	bool ev_count_fail = ((_params.fusion_mode & MASK_USE_EVPOS) || (_params.fusion_mode & MASK_USE_EVYAW)) && (_ev_counter <= 2*_obs_buffer_length);
 	 
 	 if (hgt_count_fail || mag_count_fail) {

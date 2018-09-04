@@ -52,7 +52,8 @@ bool Ekf::resetVelocity()
 	// reset EKF states
 	if (_control_status.flags.gps) {
 		// this reset is only called if we have new gps data at the fusion time horizon
-		_state.vel = _gps_sample_delayed.vel;
+		_state.vel.setZero();
+		//_state.vel = _gps_sample_delayed.vel;
 
 	} else if (_control_status.flags.opt_flow || _control_status.flags.ev_pos) {
 		_state.vel.setZero();

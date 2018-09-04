@@ -1,13 +1,15 @@
 #include "Myekf2.h"
 #include <fstream>
-#include<time.h>
+#include <time.h>
+#include <stdio.h>
+
 class Ekf2;
-std::ifstream read1("data/imu_data.txt");
+std::ifstream read1("../data/imu_data.txt");
 std::ifstream read2("data/gps_data.txt");
-std::ifstream read3("data/mag_data.txt");
-std::ifstream read4("data/baro_data.txt");
-std::ofstream euler_estimator("euler_estimator.txt");
-std::ofstream position_estimator("position_estimator.txt");
+std::ifstream read3("../data/mag_data.txt");
+std::ifstream read4("../data/baro_data.txt");
+std::ofstream euler_estimator("../results/euler_estimator.txt");
+std::ofstream position_estimator("../results/position_estimator.txt");
 
 bool bReadGPS, bReadMag, bReadBaro;
 
@@ -50,7 +52,8 @@ void Ekf2::task_main()
     double mag_time_ms_read, magx, magy, magz;
     double baro_time_ms_read, baroHeight, baroHeight_origin = 0.0f;
 
-	while (!_task_should_exit && !read1.eof() && !read2.eof() && !read3.eof() && !read4.eof()) {
+	//while (!_task_should_exit && !read1.eof() && !read2.eof() && !read3.eof() && !read4.eof()) {
+	while (!_task_should_exit && !read1.eof() &&  !read3.eof() && !read4.eof()) {
 
 		bool isa = true;
 		bool mag_updated = false;
@@ -142,7 +145,7 @@ void Ekf2::task_main()
 			read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;read4>>temp;
 			read4 >> baroHeight ;
 			read4>>temp;
-			//baroHeight /= 2.0f;
+			baroHeight /= 2.0f;
 			// if(baroHeight_origin == 0)
 			// 	baroHeight_origin = baroHeight;
 			// baroHeight -= baroHeight_origin;
@@ -206,10 +209,10 @@ void Ekf2::task_main()
 			gps_msg.epv = 0.4;
 			gps_msg.sacc = 0;
 			gps_msg.vel_m_s = 0;
-			gps_msg.vel_ned[0] = 0;
+			gps_msg.vel_ned[0] = 0;	//no gps ned vel
 			gps_msg.vel_ned[1] = 0;
 			gps_msg.vel_ned[2] = 0;
-			gps_msg.vel_ned_valid = 0;
+			gps_msg.vel_ned_valid = 1;
 			gps_msg.nsats = 8;
 			//TODO add gdop to gps topic
 			gps_msg.gdop = 0.0f;
@@ -223,13 +226,14 @@ void Ekf2::task_main()
 
 		//run the EKF update and output
 		if (_ekf.update()) {
-			printf("zyxloveljs\n");
+		
 
 			matrix::Quaternion<float> q;
 			_ekf.copy_quaternion(q.data());
 
 			float velocity[3];
 			_ekf.get_velocity(velocity);
+			//printf("velocity: %lf,%lf,%lf\n", velocity[0], velocity[1], velocity[2]);
 
 			float gyro_rad[3];
 
@@ -251,8 +255,8 @@ void Ekf2::task_main()
 				float position[3];
 				_ekf.get_position(position);
 				//printf("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
-				position_estimator<< now/1.e6f <<" "<<position[0] <<" "<<position[1] <<" "
-				<<position[2] <<" "<<std::endl;
+				position_estimator<< now/1.e6f <<" "<<position[0] <<" "<<position[1] - 0.278398 <<" "
+				<<-position[2] + 0.0849676 <<" "<<std::endl;
 				// Attitude quaternion
 				//q.copyTo(ctrl_state.q);
 
@@ -303,17 +307,20 @@ void Ekf2::task_main()
 			Vector3f pos_var, vel_var;
 			_ekf.get_pos_var(pos_var);
 			_ekf.get_vel_var(vel_var);
-	
-		
+			//printf("pos_var: %lf,%lf,%lf\n", pos_var(0), pos_var(1), pos_var(2) );
+			//printf("vel_var: %lf,%lf,%lf\n", vel_var(0), vel_var(1), vel_var(2) );
+
 		} 
 
 	}
+	printf("end\n");
+
 
 }
 
 int main(int argc, char *argv[])
 {
-	printf("asasssa\n");
+	printf("begin\n");
 	bReadGPS = true;
 	Ekf2* _ekf2 = new Ekf2();
 	//_ekf2->print_status();

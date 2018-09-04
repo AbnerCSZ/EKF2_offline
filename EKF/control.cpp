@@ -400,8 +400,8 @@ void Ekf::controlGpsFusion()
 		// Only use GPS data for position and velocity aiding if enabled
 		if (_control_status.flags.gps) {
 			_fuse_pos = true;
-			// _fuse_vert_vel = true;
-			// _fuse_hor_vel = true;
+			  //_fuse_vert_vel = true;
+			  //_fuse_hor_vel = true;
 			_fuse_vert_vel = false;
 			_fuse_hor_vel = false;
 
@@ -429,17 +429,24 @@ void Ekf::controlGpsFusion()
 			_fuse_height = true;
 
 		}
+		 
 	} else {
 		// handle the case where we do not have GPS and have not been using it for an extended period, but are still relying on it
 		if ((_time_last_imu - _time_last_gps > 10e6) && (_time_last_imu - _time_last_airspeed > 1e6) && (_time_last_imu - _time_last_optflow > 1e6) && _control_status.flags.gps) {
 			// if we don't have a source of aiding to constrain attitude drift,
 			// then we need to switch to the non-aiding mode, zero the velocity states
 			// and set the synthetic GPS position to the current estimate
+
 			_control_status.flags.gps = false;
 			_last_known_posNE(0) = _state.pos(0);
 			_last_known_posNE(1) = _state.pos(1);
 			_state.vel.setZero();
-			ECL_WARN("EKF measurement timeout - stopping navigation");
+			ECL_WARN("EKF measurement timeout - stopping navigation\n");
+			printf("_time_last_gps::  %ld\n", _time_last_gps);
+			printf("_time_last_imu::  %ld\n", _time_last_imu);
+			printf("cha::  %ld\n", _time_last_imu - _time_last_gps);
+			while(1){}
+
 
 		}
 	}
@@ -943,6 +950,7 @@ void Ekf::controlVelPosFusion()
 	// Fuse available NED velocity and position data into the main filter
 	if (_fuse_height || _fuse_pos || _fuse_hor_vel || _fuse_vert_vel) {
 		fuseVelPosHeight();
+
 		_fuse_hor_vel = _fuse_vert_vel = _fuse_pos = _fuse_height = false;
 
 	}

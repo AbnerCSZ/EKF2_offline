@@ -1,3 +1,29 @@
+# Example using ECL offline
+
+I use Myekf2.cpp. instead of main.cpp.  
+In order to run normally, we need to have a folder called "data" in the root directory.
+And the "data" should have : 
+imu_data.txt  
+gps_data.txt  
+mag_data.txt  
+baro_data.txt  
+
+
+### Build
+```
+mkdir build/
+cd build/
+cmake ../EKF
+make
+```
+
+### Usage
+```
+cd build
+./myekf2
+```
+
+
 # ECL
 
 **Very lightweight Estimation & Control Library.**
@@ -24,8 +50,3 @@ cmake ../EKF
 make
 ```
 
-Alternatively, just run:
-
-```
-./build.sh
-```

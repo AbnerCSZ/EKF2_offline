@@ -119,7 +119,7 @@ int base_main(int argc, char *argv[])
 	gps.fix_type = 4;		// 0-1: no fix, 2: 2D fix, 3: 3D fix, 4: RTCM code differential, 5: Real-Time
 	gps.eph = 5.0f;			// GPS HDOP horizontal dilution of position in m
 	gps.epv = 5.0f;			// GPS VDOP horizontal dilution of position in m
-	gps.vel_ned_valid = true;	// GPS ground speed is valid
+	gps.vel_ned_valid = false;	// GPS ground speed is valid
 
 	// simulate two seconds
 	for (int i = 0; i < 800; i++) {

@@ -121,10 +121,11 @@
 			gps_msg.epv = 0.4;
 			gps_msg.sacc = 0;
 			gps_msg.vel_m_s = 0;
-			gps_msg.vel_ned[0] = 0;
-			gps_msg.vel_ned[1] = 0;
-			gps_msg.vel_ned[2] = 0;
-			gps_msg.vel_ned_valid = 0;
+			gps_msg.vel_ned[0] = 110;
+			gps_msg.vel_ned[1] = 110;
+			gps_msg.vel_ned[2] = 10 1;
+
+			gps_msg.vel_ned_valid = 1;
 			gps_msg.nsats = 8;
 			//TODO add gdop to gps topic
 			gps_msg.gdop = 0.0f;

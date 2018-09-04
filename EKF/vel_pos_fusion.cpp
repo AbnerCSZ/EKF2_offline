@@ -54,10 +54,11 @@ void Ekf::fuseVelPosHeight()
 
 	// calculate innovations, innovations gate sizes and observation variances
 	if (_fuse_hor_vel) {
+
 		fuse_map[0] = fuse_map[1] = true;
 		// horizontal velocity innovations
-		_vel_pos_innov[0] = _state.vel(0) - _gps_sample_delayed.vel(0);
-		_vel_pos_innov[1] = _state.vel(1) - _gps_sample_delayed.vel(1);
+		//_vel_pos_innov[0] = _state.vel(0) - _gps_sample_delayed.vel(0);
+		//_vel_pos_innov[1] = _state.vel(1) - _gps_sample_delayed.vel(1);
 		// observation variance - use receiver reported accuracy with parameter setting the minimum value
 		R[0] = fmaxf(_params.gps_vel_noise, 0.01f);
 		R[0] = fmaxf(R[0], _gps_sample_delayed.sacc);
@@ -71,7 +72,7 @@ void Ekf::fuseVelPosHeight()
 	if (_fuse_vert_vel) {
 		fuse_map[2] = true;
 		// vertical velocity innovation
-		_vel_pos_innov[2] = _state.vel(2) - _gps_sample_delayed.vel(2);
+		//_vel_pos_innov[2] = _state.vel(2) - _gps_sample_delayed.vel(2);
 		// observation variance - use receiver reported accuracy with parameter setting the minimum value
 		R[2] = fmaxf(_params.gps_vel_noise, 0.01f);
 		// use scaled horizontal speed accuracy assuming typical ratio of VDOP/HDOP
@@ -82,6 +83,7 @@ void Ekf::fuseVelPosHeight()
 	}
 
 	if (_fuse_pos) {
+		//printf("_fuse_pos\n");
 		fuse_map[3] = fuse_map[4] = true;
 
 		// Calculate innovations and observation variance depending on type of observations
@@ -132,6 +134,7 @@ void Ekf::fuseVelPosHeight()
 	}
 
 	if (_fuse_height) {
+
 		if (_control_status.flags.baro_hgt) {
 			fuse_map[5] = true;
 			// vertical position innovation - baro measurement has opposite sign to earth z axis
