@@ -1,8 +1,11 @@
 # Example using ECL offline
 
 I use Myekf2.cpp. instead of main.cpp.  
+This version use EKF without GPS velocity.  
+If we have GPS velocity, we should cover the folder EKF with the  original code.   
 In order to run normally, we need to have a folder called "data" in the root directory.
-And the "data" should have : 
+And the "data" should have :   
+
 imu_data.txt  
 gps_data.txt  
 mag_data.txt  
